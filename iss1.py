@@ -1,12 +1,6 @@
-from flask import Flask, render_template, request, redirect, send_file
 from matplotlib import pyplot as plt
 import math
 import json
-import skfuzzy
-from skfuzzy import control as ctrl
-import numpy as np
-
-import os
 
 # init
 hmaks = 15  # wysokosc zbiornika
@@ -89,6 +83,9 @@ for i in range(n):
         h_pid[i + 1] = 0.0
 
 # logika rozmyta
+import skfuzzy
+from skfuzzy import control as ctrl
+import numpy as np
 
 error = ctrl.Antecedent(np.arange(-2, 2, 0.01), 'error')
 error_delta = ctrl.Antecedent(np.arange(-2, 2, 0.01), 'error_delta')
@@ -189,30 +186,59 @@ for i in range(n):
     if h_fuzzy[i + 1] < 0:
         h_fuzzy[i + 1] = 0.0
 
+fig = plt.figure()
+plt.plot(time_fuzzy, h_fuzzy)
+plt.xlabel('czas[s]')
+plt.ylabel('Wysokość[m]')
+plt.title('Wysokość słupa wody-fuzzy')
+fig.show()
 
-app = Flask(__name__)
-app.config['TEMPLATES_AUTO_RELOAD'] = True
-imSavePath = "./"
+fig = plt.figure()
+plt.plot(time_fuzzy[0:n], e)
+plt.title('error-fuzzy')
+fig.show()
 
+fig = plt.figure()
+plt.plot(time_fuzzy, e_d)
+plt.title('error_delta-fuzzy')
+fig.show()
 
-@app.route('/')
-def hello():
-    return 'Hello, World!'
+fig = plt.figure()
+plt.plot(time_fuzzy[0:n], q)
+plt.title('Qd-fuzzy')
+fig.show()
 
+fig = plt.figure()
+plt.plot(time_pid, h_pid)
+plt.xlabel('czas[s]')
+plt.ylabel('Wysokość[m]')
+plt.title('Wysokość słupa wody-pid')
+fig.show()
 
-@app.route('/fuzzy', methods=["POST", "GET"])
-def fuzzyPlots():
-    global time_fuzzy, h_fuzzy, e, e_d, q
-    xlabel = time_fuzzy
-    values = h_fuzzy
-    return render_template("public/fuzzy.html", xlabel=xlabel, values=values, values_e=e, values_e_d=e_d, values_q=q)
-@app.route('/pid', methods=["POST", "GET"])
-def pidPlots():
-    global time_pid, h_pid
-    xlabel = time_pid
-    values = h_pid
-    return render_template("public/pid.html", xlabel=xlabel, values=values)
+plt.show()
 
-if (__name__ == '__main__'):
-    app.run(debug=True)  # run our app
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+wholeData = []
+
+with open("data_fuzzy.json", "w") as write_file:
+    for i in range(0, n):
+        data = ({
+            "t": time_fuzzy[i],
+            "y": h_fuzzy[i]
+        })
+
+        wholeData.append(data)
+    json.dump(wholeData, write_file)
+    write_file.close()
+wholeData = []
+
+with open("data_pid.json", "w") as write_file:
+    for i in range(0, n):
+        data = ({
+            "t": time_pid[i],
+            "y": h_pid[i]
+        })
+
+        wholeData.append(data)
+    json.dump(wholeData, write_file)
+    write_file.close()
+

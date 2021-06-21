@@ -45,10 +45,12 @@
 				labels: {{ xlabel | safe }},
 				datasets: [
 				{
-					label: "Data points",
+					label: "Error delta value",
 					data: {{ values_e_d | safe }},
 					fill: false,
-					borderColor: "rgb(75, 192, 192)",
+					borderColor: "rgb(193,17,198)",
+					pointRadius: 1,
+					pointHoverRadius: 1,
 					lineTension: 0.1
 				}
 			]
@@ -66,10 +68,12 @@
 				labels: {{ xlabel | safe }},
 				datasets: [
 				{
-					label: "Data points",
+					label: "Qd value",
 					data: {{ values_q | safe }},
 					fill: false,
-					borderColor: "rgb(75, 192, 192)",
+					borderColor: "rgb(27,212,93)",
+					pointRadius: 1,
+					pointHoverRadius: 1,
 					lineTension: 0.1
 				}
 			]
@@ -87,10 +91,12 @@
 				labels: {{ xlabel | safe }},
 				datasets: [
 				{
-					label: "Data points",
+					label: "Error value",
 					data: {{ values_e | safe }},
 					fill: false,
-					borderColor: "rgb(75, 192, 192)",
+					borderColor: "rgb(212,11,11)",
+					pointRadius: 1,
+					pointHoverRadius: 1,
 					lineTension: 0.1
 				}
 			]
@@ -108,10 +114,12 @@
 				labels: {{ xlabel | safe }},
 				datasets: [
 				{
-					label: "Data points",
+					label: "Water Level",
 					data: {{ values | safe }},
 					fill: false,
-					borderColor: "rgb(75, 192, 192)",
+					borderColor: "rgb(13,222,222)",
+					pointRadius: 1,
+					pointHoverRadius: 1,
 					lineTension: 0.1
 				}
 			]
