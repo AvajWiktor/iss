@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wykresik</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>	
+</head>
+<body>
+<style>
+.chart--grid {
+    	position: relative;
+}
+.col--left{
+	position: absolute;
+	left: -10px;
+	top: -10px;
+}
+.col--right {
+	position: absolute;
+	left: 900px;
+	top: -10px;
+}
+</style>
+	<div class = chart--grid>
+		<div class= col--left>
+		<canvas id="Wysokosc slupa wody" width="900" height="400"></canvas>
+		<canvas id="error_delta" width="900" height="400"></canvas>
+		</div>
+	</div>
+	<div class = chart--grid>
+		<div class=col--right>
+		<canvas id="error" width="900" height="400"></canvas>
+		<canvas id="Qd" width="900" height="400"></canvas>
+		</div>
+	</div>
+	
+	<canvas id="error_delta" width="900" height="400"></canvas>
+	<canvas id="Qd" width="900" height="400"></canvas>
+	<script>
+		var ctx = document.getElementById("error_delta").getContext("2d");
+		var lineChart = new Chart(ctx, {
+			type: "line",
+			data: {
+				labels: {{ xlabel | safe }},
+				datasets: [
+				{
+					label: "Data points",
+					data: {{ values_e_d | safe }},
+					fill: false,
+					borderColor: "rgb(75, 192, 192)",
+					lineTension: 0.1
+				}
+			]
+		},
+		options: {
+			responsive: false
+		}
+	});
+	</script>
+	<script>
+		var ctx = document.getElementById("Qd").getContext("2d");
+		var lineChart = new Chart(ctx, {
+			type: "line",
+			data: {
+				labels: {{ xlabel | safe }},
+				datasets: [
+				{
+					label: "Data points",
+					data: {{ values_q | safe }},
+					fill: false,
+					borderColor: "rgb(75, 192, 192)",
+					lineTension: 0.1
+				}
+			]
+		},
+		options: {
+			responsive: false
+		}
+	});
+	</script>
+	<script>
+		var ctx = document.getElementById("error").getContext("2d");
+		var lineChart = new Chart(ctx, {
+			type: "line",
+			data: {
+				labels: {{ xlabel | safe }},
+				datasets: [
+				{
+					label: "Data points",
+					data: {{ values_e | safe }},
+					fill: false,
+					borderColor: "rgb(75, 192, 192)",
+					lineTension: 0.1
+				}
+			]
+		},
+		options: {
+			responsive: false
+		}
+	});
+	</script>
+	<script>
+		var ctx = document.getElementById("Wysokosc slupa wody").getContext("2d");
+		var lineChart = new Chart(ctx, {
+			type: "line",
+			data: {
+				labels: {{ xlabel | safe }},
+				datasets: [
+				{
+					label: "Data points",
+					data: {{ values | safe }},
+					fill: false,
+					borderColor: "rgb(75, 192, 192)",
+					lineTension: 0.1
+				}
+			]
+		},
+		options: {
+			responsive: false
+		}
+	});
+	</script>
+	
+
+</body>
+</html>
