@@ -35,7 +35,7 @@
 				labels: {{ xlabel | safe }},
 				datasets: [
 				{
-					label: "Water Level",
+					label: "Water Level [m]",
 					data: {{ values | safe }},
 					fill: false,
 					borderColor: "rgb(22,210,210)",
@@ -46,6 +46,25 @@
 			]
 		},
 		options: {
+			tooltips: {
+    			callbacks: {
+      				label: (item) => `${item.yLabel} m`,
+    				},
+  			},
+  			scales: {
+    			yAxes: [{
+      				scaleLabel: {
+        				display: true,
+        				labelString: 'Water level [m]'
+      				}
+    			}],
+    			xAxes: [{
+      				scaleLabel: {
+        				display: true,
+        				labelString: 'time [s]'
+      				}
+    			}]
+  			},
 			responsive: false
 		}
 	});

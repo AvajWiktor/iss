@@ -9,17 +9,17 @@ import numpy as np
 import os
 
 # init
-hmaks = 15  # wysokosc zbiornika
-n = 100  # ilosc iteracji badania
-dt = 0.1  # probkowanie co 0.01s, to samo co Tp
-hzad = 16  # wysokosc slupa zadana
-h0 = 1  # wysokosc slupa poczatkowa
-A = 8  # powierzchnia podstawy
-betha = 0.1  # wspolczynnik wyplywu: Q0(t) = betha * sqrt(h(t))
-Qd = 0  # poczatkowe natezenie doplywu
-K_p = 3.0
-K_i = 1.0
-K_d = 0.3
+# hmaks = 15  # wysokosc zbiornika
+# n = 100  # ilosc iteracji badania
+# dt = 0.1  # probkowanie co 0.01s, to samo co Tp
+# hzad = 16  # wysokosc slupa zadana
+# h0 = 1  # wysokosc slupa poczatkowa
+# A = 8  # powierzchnia podstawy
+# betha = 0.1  # wspolczynnik wyplywu: Q0(t) = betha * sqrt(h(t))
+# Qd = 0  # poczatkowe natezenie doplywu
+#K_p = 3.0
+#K_i = 1.0
+#K_d = 0.3
 
 with open('config.json') as json_file:
     data = json.load(json_file)
@@ -34,6 +34,7 @@ with open('config.json') as json_file:
     K_p = float(data['kp'])
     K_i = float(data['ki'])
     K_d = float(data['kd'])
+
 
 
 def PID(Kp, Ki, Kd, MV_bar=0):
@@ -84,13 +85,17 @@ for i in range(n):
     # h[i+1] = controller.send([time[i], ((1/A)*(-betha * math.sqrt(h[i]) + Qd)*dt + h[i]), 5])
     print(h_pid[i])
     Qd = controller.send([time_pid[i], ((1 / A) * (-betha * math.sqrt(h_pid[i]) + Qd) * dt + h_pid[i]), hzad])
+    if Qd < 0:
+        Qd = 0
+    if Qd > 2:
+        Qd = 2
     h_pid[i + 1] = (1 / A) * (-betha * math.sqrt(h_pid[i]) + Qd) * dt + h_pid[i]
     if h_pid[i + 1] < 0:
         h_pid[i + 1] = 0.0
 
 # logika rozmyta
 
-error = ctrl.Antecedent(np.arange(-2, 2, 0.01), 'error')
+error = ctrl.Antecedent(np.arange(-2, 9, 0.01), 'error')
 error_delta = ctrl.Antecedent(np.arange(-2, 2, 0.01), 'error_delta')
 output = ctrl.Consequent(np.arange(0, 2, 0.01), 'output')
 
@@ -100,7 +105,15 @@ error['MU'] = skfuzzy.trimf(error.universe, [-0.4, -0.2, 0])
 error['Z'] = skfuzzy.trimf(error.universe, [-0.1, 0, 0.1])
 error['MD'] = skfuzzy.trimf(error.universe, [0, 0.2, 0.4])
 error['ŚD'] = skfuzzy.trimf(error.universe, [0.2, 1, 1.8])
-error['DD'] = skfuzzy.trapmf(error.universe, [1, 2, 2, 2])
+error['DD'] = skfuzzy.trapmf(error.universe, [1, 3, 9, 9])
+
+# error_delta['DU'] = skfuzzy.trapmf(error_delta.universe, [-2, -2, -2, -0.5])
+# error_delta['ŚU'] = skfuzzy.trimf(error_delta.universe, [-0.7, -0.45, -0.2])
+# error_delta['MU'] = skfuzzy.trimf(error_delta.universe, [-0.3, -0.15, 0])
+# error_delta['Z'] = skfuzzy.trimf(error_delta.universe, [-0.1, 0, 0.1])
+# error_delta['MD'] = skfuzzy.trimf(error_delta.universe, [0, 0.15, 0.3])
+# error_delta['ŚD'] = skfuzzy.trimf(error_delta.universe, [0.2, 0.45, 0.7])
+# error_delta['DD'] = skfuzzy.trapmf(error_delta.universe, [0.5, 2, 2, 2])
 
 error_delta['DU'] = skfuzzy.trapmf(error_delta.universe, [-2, -2, -2, -1])
 error_delta['ŚU'] = skfuzzy.trimf(error_delta.universe, [-1.8, -1, -0.2])
@@ -116,6 +129,12 @@ output['ŚD'] = skfuzzy.trimf(output.universe, [0.4, 0.6, 0.8])
 output['DD'] = skfuzzy.trimf(output.universe, [0.6, 0.8, 1.0])
 output['BDD'] = skfuzzy.trapmf(output.universe, [0.8, 1.2, 2, 2])
 
+
+
+# error.view()
+# error_delta.view()
+# output.view()
+# plt.show()
 rule0 = ctrl.Rule(antecedent=(
         (error['DU'] & error_delta['DU']) | (error['DU'] & error_delta['ŚU']) | (error['DU'] & error_delta['MU']) |
         (error['DU'] & error_delta['Z']) | (error['DU'] & error_delta['MD']) | (error['DU'] & error_delta['ŚD']) |
@@ -130,6 +149,7 @@ rule0 = ctrl.Rule(antecedent=(
         (error['ŚD'] & error_delta['DU']) | (error['ŚD'] & error_delta['ŚU']) |
         (error['DD'] & error_delta['DU'])
 ), consequent=output['Z'], label='rule Z')
+# definicja output - tu Z
 
 rule1 = ctrl.Rule(antecedent=(
         (error['ŚU'] & error_delta['DD']) |
@@ -176,11 +196,11 @@ for i in range(n):
     simulation.input['error'] = hzad - h_fuzzy[i]
     e[i] = hzad - h_fuzzy[i]
     if (i > 0):
-        simulation.input['error_delta'] = (hzad - h_fuzzy[i]) - (hzad - h_fuzzy[i - 1])
-        e_d[i]= (hzad - h_fuzzy[i]) - (hzad - h_fuzzy[i - 1])
+        simulation.input['error_delta'] = (hzad - h_fuzzy[i - 1]) - (hzad - h_fuzzy[i])
+        e_d[i]= (hzad - h_fuzzy[i - 1]) - (hzad - h_fuzzy[i])
     else:
         simulation.input['error_delta'] = (hzad - h_fuzzy[i])
-        e_d[i] = (hzad - h_fuzzy[i])
+        e_d[i] = 0
 
     simulation.compute()
     Qd = simulation.output['output']
@@ -189,7 +209,8 @@ for i in range(n):
     if h_fuzzy[i + 1] < 0:
         h_fuzzy[i + 1] = 0.0
 
-
+# output.view(simulation)
+# plt.show()
 app = Flask(__name__)
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 imSavePath = "./"

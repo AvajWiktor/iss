@@ -45,7 +45,7 @@
 				labels: {{ xlabel | safe }},
 				datasets: [
 				{
-					label: "Error delta value",
+					label: "Error delta value [m]",
 					data: {{ values_e_d | safe }},
 					fill: false,
 					borderColor: "rgb(193,17,198)",
@@ -56,6 +56,25 @@
 			]
 		},
 		options: {
+			tooltips: {
+    			callbacks: {
+      				label: (item) => `${item.yLabel} m`,
+    				},
+  			},
+  			scales: {
+    			yAxes: [{
+      				scaleLabel: {
+        				display: true,
+        				labelString: 'Error delta [m]'
+      				}
+    			}],
+    			xAxes: [{
+      				scaleLabel: {
+        				display: true,
+        				labelString: 'time [s]'
+      				}
+    			}]
+  			},
 			responsive: false
 		}
 	});
@@ -68,7 +87,7 @@
 				labels: {{ xlabel | safe }},
 				datasets: [
 				{
-					label: "Qd value",
+					label: "Qd value [m^3/s]",
 					data: {{ values_q | safe }},
 					fill: false,
 					borderColor: "rgb(27,212,93)",
@@ -79,6 +98,25 @@
 			]
 		},
 		options: {
+			tooltips: {
+    			callbacks: {
+      				label: (item) => `${item.yLabel} m^3/s`,
+    				},
+  			},
+  			scales: {
+    			yAxes: [{
+      				scaleLabel: {
+        				display: true,
+        				labelString: 'Water supply [m^3/s]'
+      				}
+    			}],
+    			xAxes: [{
+      				scaleLabel: {
+        				display: true,
+        				labelString: 'time [s]'
+      				}
+    			}]
+  			},
 			responsive: false
 		}
 	});
@@ -91,7 +129,7 @@
 				labels: {{ xlabel | safe }},
 				datasets: [
 				{
-					label: "Error value",
+					label: "Error value [m]",
 					data: {{ values_e | safe }},
 					fill: false,
 					borderColor: "rgb(212,11,11)",
@@ -102,6 +140,25 @@
 			]
 		},
 		options: {
+			tooltips: {
+    			callbacks: {
+      				label: (item) => `${item.yLabel} m`,
+    				},
+  			},
+  			scales: {
+    			yAxes: [{
+      				scaleLabel: {
+        				display: true,
+        				labelString: 'Error value [m]'
+      				}
+    			}],
+    			xAxes: [{
+      				scaleLabel: {
+        				display: true,
+        				labelString: 'time [s]'
+      				}
+    			}]
+  			},
 			responsive: false
 		}
 	});
@@ -125,6 +182,25 @@
 			]
 		},
 		options: {
+			tooltips: {
+    			callbacks: {
+      				label: (item) => `${item.yLabel} m`,
+    				},
+  			},
+  			scales: {
+    			yAxes: [{
+      				scaleLabel: {
+        				display: true,
+        				labelString: 'Water level [m]'
+      				}
+    			}],
+    			xAxes: [{
+      				scaleLabel: {
+        				display: true,
+        				labelString: 'time [s]'
+      				}
+    			}]
+  			},
 			responsive: false
 		}
 	});
